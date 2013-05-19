@@ -21,27 +21,12 @@
 
 + (NSString*)formatPathForResourceWithName:(NSString*)resourceName
 {
-    NSString* path = nil;
+    NSString* path = [[NSBundle mainBundle] pathForResource:Format(@"bundle/%@", resourceName)
+                                                     ofType:nil];
 
-    NSString* bundlePath = [[NSBundle mainBundle] pathForResource:Format(@"bundle/%@", resourceName)
-                                                           ofType:nil];
-    
-    if (bundlePath != nil && [[NSFileManager defaultManager] fileExistsAtPath:bundlePath])
-        path = bundlePath;
-    
-    if (path != nil)
-        return path;
-    
-    NSString* offlineMainBundlePath = [[NSBundle mainBundle] pathForResource:resourceName
-                                                                      ofType:nil];
-    
-    if ([NSFileManager.defaultManager fileExistsAtPath:offlineMainBundlePath])
-        path = offlineMainBundlePath;
-    
-    if (path != nil)
-        return path;
-    
-    return nil;
+    CheckTrue([[NSFileManager defaultManager] fileExistsAtPath:path])
+        
+    return path;
 }
 
 + (id)configurationObjectForResource:(NSString*)resourceName
@@ -65,7 +50,9 @@
 	NSData* configurationJSONData = [self dataForResource:resourceName];
 	CheckNotNull(configurationJSONData);
 	
-	NSMutableDictionary* configurationDictionary = [configurationJSONData mutableObjectFromJSONData];
+    NSError* error = [NSError object];
+	NSMutableDictionary* configurationDictionary = [configurationJSONData mutableObjectFromJSONDataWithParseOptions:JKParseOptionStrict
+                                                                                                              error:&error];
 	CheckNotNull(configurationDictionary);
 	
 	return configurationDictionary;

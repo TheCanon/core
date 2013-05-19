@@ -110,7 +110,7 @@
 #define ImplementStubbedServiceCommandNoResponse(commandNameArg, inputType, stubbedBlockArg)                    \
 + (void)commandNameArg:(inputType*)commandInput                                                \
 {\
-    stubbedBlockArg(inputType);\
+    stubbedBlockArg(commandInput);\
 }
 
 // No input, No response

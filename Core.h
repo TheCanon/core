@@ -13,3 +13,6 @@
 #import "JSONKit.h"
 
 #import "Service.h"
+
+#import "Identifier.h"
+#import "DisplayInformation.h"

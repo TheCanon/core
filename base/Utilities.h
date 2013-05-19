@@ -16,4 +16,6 @@ typedef void (^VoidBlock)();
 
 + (NSString*)formatDate:(NSDate*)date;
 
++ (void)addNewEntriesOfSourceDictionary:(NSDictionary*)source
+                     toTargetDictionary:(NSMutableDictionary*)target;
 @end

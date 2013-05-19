@@ -2,7 +2,7 @@
 #import "Manager.h"
 #import "Base.h"
 #import "ViewManager.h"
-#import "QBAppDelegate.h"
+#import "GameAppDelegate.h"
 
 @interface AppDirector ()
 {
@@ -66,7 +66,7 @@
         
         [self internal_removeManagers];
         [self internal_setupManagers];
-        [[QBAppDelegate sharedApplicationDelegate] reload];    
+        [[GameAppDelegate sharedApplicationDelegate] reload];
     }
     
     if (_shouldReload || _firstFrame)
@@ -104,7 +104,7 @@
         manager.director = self;
         
         [managersByClass setObject:manager
-                            forKey:NSStringFromClass([manager class])];
+                            forKey:(id<NSCopying>)[manager class]];
     }
     
     self.managersByClass = managersByClass;
@@ -135,7 +135,7 @@
             
 			if (ivarClass != nil)
 			{
-				id registeredManager = [_managersByClass objectForKey:NSStringFromClass(ivarClass)];
+				id registeredManager = [_managersByClass objectForKey:ivarClass];
 				
 				if (registeredManager != nil)
 				{
@@ -151,7 +151,7 @@
 
 - (id)managerForClass:(Class)managerClass
 {
-    return _managersByClass[NSStringFromClass(managerClass)];
+    return _managersByClass[managerClass];
 }
 
 @end

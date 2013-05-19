@@ -51,4 +51,98 @@ NSDateFormatter* dateFormatter = nil;
     return [dateFormatter stringFromDate:date];
 }
 
++ (void)addNewEntryToArray:(NSMutableArray*)target
+                     value:(id)value
+{
+    if ([value isKindOfClass:NSDictionary.class])
+    {
+        NSMutableDictionary* targetEntry = [NSMutableDictionary object];
+        [Util addNewEntriesOfSourceDictionary:value
+                           toTargetDictionary:targetEntry];
+        [target addObject:targetEntry];
+    }
+    else if ([value isKindOfClass:NSArray.class])
+    {
+        NSMutableArray* targetEntry = [NSMutableArray object];
+        for (id entry in value)
+        {
+            [Util addNewEntryToArray:targetEntry
+                               value:value];
+        }
+        [target addObject:targetEntry];
+    }
+    else
+    {
+        [target addObject:[value copy]];
+    }
+}
+
++ (void)addNewEntryToDictionary:(NSMutableDictionary*)target
+                            key:(NSString*)key
+                          value:(id)value
+{
+    if ([value isKindOfClass:NSDictionary.class])
+    {
+        NSMutableDictionary* targetEntry = [NSMutableDictionary object];
+        [Util addNewEntriesOfSourceDictionary:value
+                           toTargetDictionary:targetEntry];
+        [target setObject:targetEntry
+                   forKey:key];
+    }
+    else if ([value isKindOfClass:NSArray.class])
+    {
+        NSMutableArray* targetEntry = [NSMutableArray object];
+        for (id entry in value)
+        {
+            [Util addNewEntryToArray:targetEntry
+                               value:value];
+        }
+        [target setObject:targetEntry
+                   forKey:key];
+    }
+    else
+    {
+        [target setObject:[value copy]
+                   forKey:key];
+    }
+}
+
+
++ (void)addNewEntriesOfSourceDictionary:(NSDictionary*)source
+                     toTargetDictionary:(NSMutableDictionary*)target;
+{
+    // TODO: replace (then test) with object_getClass([NSDictionary.class])
+    // TODO: replace (then test) with object_getClass([NSMutableDictionary.class])
+    Class dictionaryClass = source.class;
+    Class mutableDictionaryClass = target.class;
+    
+    for (NSString* sourceKey in source.allKeys)
+    {
+        id sourceValue = [source objectForKey:sourceKey];
+        id targetValue = [target objectForKey:sourceKey];
+        
+        Class sourceValueClass = [sourceValue class];
+        Class targetValueClass = [targetValue class];
+        
+        if (targetValue == nil)
+        {
+            [Util addNewEntryToDictionary:target
+                                      key:sourceKey
+                                    value:sourceValue];
+            continue;
+        }
+        else if (targetValue != nil)
+        {
+            if (sourceValueClass == dictionaryClass &&
+                (targetValueClass == mutableDictionaryClass ||
+                 targetValueClass == dictionaryClass))
+            {
+                [Util addNewEntriesOfSourceDictionary:sourceValue
+                                   toTargetDictionary:targetValue];
+            }
+            continue;
+        }
+    }
+}
+
 @end

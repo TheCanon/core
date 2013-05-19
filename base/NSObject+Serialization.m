@@ -12,9 +12,9 @@ static NSMutableDictionary* classesByPropertyNameByClass;
 {
     deserializerBlock = [deserializerBlock copy];
     
-    CheckNotNull(deserializersByPropertyNameByClass[[self class]]);
+    CheckNotNull(deserializersByPropertyNameByClass[self.class]);
     
-    NSMutableDictionary* deserializersByPropertyName = deserializersByPropertyNameByClass[[self class]];
+    NSMutableDictionary* deserializersByPropertyName = deserializersByPropertyNameByClass[self.class];
     CFDictionarySetValue((CFMutableDictionaryRef)deserializersByPropertyName,
                          propertyName,
                          deserializerBlock);
@@ -30,12 +30,12 @@ static NSMutableDictionary* classesByPropertyNameByClass;
         classesByPropertyNameByClass = [NSMutableDictionary new];
     }
     
-    if (classesByPropertyNameByClass[NSStringFromClass(self.class)] == nil)
+    if (classesByPropertyNameByClass[self.class] == nil)
     {
-        classesByPropertyNameByClass[NSStringFromClass(self.class)] = [NSMutableDictionary new];
+        classesByPropertyNameByClass[(id<NSCopying>)self.class] = [NSMutableDictionary new];
     }
     
-    NSMutableDictionary* classesByPropertyName = classesByPropertyNameByClass[NSStringFromClass(self.class)];
+    NSMutableDictionary* classesByPropertyName = classesByPropertyNameByClass[self.class];
     CFDictionarySetValue((CFMutableDictionaryRef)classesByPropertyName,
                          propertyName,
                          classToUse);
@@ -44,7 +44,7 @@ static NSMutableDictionary* classesByPropertyNameByClass;
 
 static DeserializerBlock deserializerForContainerProperty(Class class, NSString* propertyName)
 {
-    NSMutableDictionary* deserializersByPropertyName = deserializersByPropertyNameByClass[NSStringFromClass(class)];
+    NSMutableDictionary* deserializersByPropertyName = deserializersByPropertyNameByClass[class];
     
     if (deserializersByPropertyName == nil)
     {
@@ -53,7 +53,7 @@ static DeserializerBlock deserializerForContainerProperty(Class class, NSString*
         {
             deserializersByPropertyNameByClass = [NSMutableDictionary new];
         }
-        deserializersByPropertyNameByClass[NSStringFromClass(class)] = deserializersByPropertyName;
+        deserializersByPropertyNameByClass[(id<NSCopying>)class] = deserializersByPropertyName;
         [class setupSerialization];
     }
     
@@ -62,7 +62,7 @@ static DeserializerBlock deserializerForContainerProperty(Class class, NSString*
 
 static Class classForContainerProperty(Class class, NSString* propertyName)
 {
-    NSMutableDictionary* classesByPropertyName = classesByPropertyNameByClass[NSStringFromClass(class)];
+    NSMutableDictionary* classesByPropertyName = classesByPropertyNameByClass[class];
     
     if (classesByPropertyName == nil)
     {
@@ -119,7 +119,7 @@ Class classForProperty(objc_property_t property)
 
 - (void)setValuesWithSerializedRepresentation:(NSDictionary*)serializedRepresentation
 {
-    Class selfClass = [self class];
+    Class selfClass = self.class;
     
     SEL setValueForKeySelector = @selector(setValue:forKey:);
     void (*setValueForKey)(id, SEL, id, NSString*) = (void (*)(id, SEL, id, NSString*))class_getMethodImplementation(selfClass,
@@ -263,7 +263,7 @@ Class classForProperty(objc_property_t property)
 {
 	CheckIsKindOfClass(serializedRepresentation, NSDictionary)
 	
-	id result = [[[[self class] alloc] init] autorelease];
+	id result = [[[self.class alloc] init] autorelease];
 	
     [result setValuesWithSerializedRepresentation:serializedRepresentation];
     
@@ -357,7 +357,7 @@ void serializedRepresentationRecursive(id self, Class currentClass, id result)
 {
 	NSMutableDictionary* result = [[NSMutableDictionary new] autorelease];
 	    
-	serializedRepresentationRecursive(self, [self class], result);
+	serializedRepresentationRecursive(self, self.class, result);
 	
 	return result;
 }
