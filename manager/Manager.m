@@ -10,6 +10,8 @@
 
 - (void)update {}
 
+- (void)endOfFrame {}
+
 - (void)injectConfig:(NSString*)configJsonName
 {
     @autoreleasepool

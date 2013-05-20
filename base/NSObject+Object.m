@@ -68,9 +68,9 @@ static void ManagedPropertiesObject__releaseManagedProperties(id object, Class s
             
             CheckTrue(![propertyName hasPrefix:@"get"]);
             
-            // NSLog(@"Releasing property with name: %@ on object: %@", propertyName, object);
+            //NSLog(@"Releasing property with name: %@ on object: %@", propertyName, object);
             
-			[[object valueForKey:propertyName] release];
+            [[object valueForKey:propertyName] release];
 		}
 	}
 	
@@ -79,6 +79,7 @@ static void ManagedPropertiesObject__releaseManagedProperties(id object, Class s
 
 void ManagedPropertiesObject__releaseManagedPropertiesRecursive(id self, Class currentClass)
 {
+    //NSLog(@"<<< ManagedPropertiesObject__releaseManagedPropertiesRecursive: %@>>>", self);
 	ManagedPropertiesObject__releaseManagedProperties(self, currentClass);
     
 	Class nextClass = [currentClass superclass];
@@ -98,7 +99,12 @@ void ManagedPropertiesObject__releaseManagedPropertiesRecursive(id self, Class c
 }
 
 + (void)releaseRetainedPropertiesOfObject:(id)object
-{    
+{
+    //NSLog(@"<<< ReleaseRetainedPropertiesOfObject: %@>>>", object);
+
+    // Why are you releasing stuff yourself in a subclass of ManagedPropertiesObject?
+    CheckTrue(![self isSubclassOfClass:ManagedPropertiesObject.class]);
+
     ManagedPropertiesObject__releaseManagedProperties(object, self);
 }
 

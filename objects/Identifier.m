@@ -13,6 +13,12 @@
 
 @implementation Identifier
 
+- (void)dealloc
+{
+    [_identifier release];
+    [super dealloc];
+}
+
 - (BOOL)isEqual:(Identifier*)identifier
 {
     return [_identifier isEqual:identifier.identifier];

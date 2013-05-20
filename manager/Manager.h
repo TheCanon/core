@@ -12,6 +12,8 @@
 
 - (void)update;
 
+- (void)endOfFrame;
+
 - (void)injectConfig:(NSString*)configJsonName;
 
 @end

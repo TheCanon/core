@@ -73,7 +73,7 @@ NSDateFormatter* dateFormatter = nil;
     }
     else
     {
-        [target addObject:[value copy]];
+        [target addObject:[[value copy] autorelease]];
     }
 }
 
@@ -102,7 +102,7 @@ NSDateFormatter* dateFormatter = nil;
     }
     else
     {
-        [target setObject:[value copy]
+        [target setObject:[[value copy] autorelease]
                    forKey:key];
     }
 }

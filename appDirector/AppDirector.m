@@ -84,6 +84,10 @@
     {
         [manager update];
     }
+    for (Manager* manager in _managersByClass.allValues)
+    {
+        [manager endOfFrame];
+    }
 }
 
 - (void)reload
