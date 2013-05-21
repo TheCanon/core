@@ -19,30 +19,20 @@
 {
     if (self = [super init])
     {
-        [self internal_initContainers];
+        _layers = [NSMutableDictionary new];
     }
     return self;
 }
 
 - (void)load
 {
-    [self internal_initContainers];
 }
 
-- (void)unload
+- (void)reload
 {
     for (ViewLayer* viewLayer in _layers.allValues)
     {
         [viewLayer dismissAllViews];
-    }
-    self.layers = nil;
-}
-
-- (void)internal_initContainers
-{
-    if (_layers == nil)
-    {
-        self.layers = [NSMutableDictionary object];
     }
 }
 

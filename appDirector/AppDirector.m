@@ -11,7 +11,6 @@
 
 @property (nonatomic, retain) NSDictionary* managersByClass;
 @property (nonatomic, retain) ViewManager* viewManager;
-@property (nonatomic, assign) BOOL firstFrame;
 @property (nonatomic, assign) BOOL shouldReload;
 
 @end
@@ -43,7 +42,10 @@
 
 - (void)beginRunning
 {
-    self.firstFrame = YES;
+    for (Manager* manager in _managersByClass.allValues)
+    {
+        [manager load];
+    }
     
     [self internal_performNextFrame];
 
@@ -59,25 +61,17 @@
 {
     if (_shouldReload)
     {
+        incrementDelayedBlockContext();
+        
         for (Manager* manager in _managersByClass.allValues)
         {
-            [manager unload];
+            [manager reload];
         }
 
-        [[GameAppDelegate sharedApplicationDelegate] reload];
+
+self.shouldReload = NO;
     }
-    
-    if (_shouldReload || _firstFrame)
-    {
-        for (Manager* manager in _managersByClass.allValues)
-        {
-            [manager load];
-        }
-        
-        self.shouldReload = NO;
-        self.firstFrame = NO;
-    }
-    
+
     for (Manager* manager in _managersByClass.allValues)
     {
         [manager update];

@@ -8,7 +8,7 @@
 
 - (void)load;
 
-- (void)unload;
+- (void)reload;
 
 - (void)update;
 
