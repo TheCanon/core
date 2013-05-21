@@ -97,10 +97,7 @@
     self.managedView.frame = _viewLayer.view.bounds;
 }
 
-- (void)viewWillShow
-{
-    [_managedView retain];
-}
+- (void)viewWillShow {}
 
 - (void)viewWillFadeOut {}
 

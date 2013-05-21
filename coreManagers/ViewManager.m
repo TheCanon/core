@@ -19,9 +19,14 @@
 {
     if (self = [super init])
     {
-        _layers = [NSMutableDictionary new];
+        [self internal_initContainers];
     }
     return self;
+}
+
+- (void)load
+{
+    [self internal_initContainers];
 }
 
 - (void)unload
@@ -29,6 +34,15 @@
     for (ViewLayer* viewLayer in _layers.allValues)
     {
         [viewLayer dismissAllViews];
+    }
+    self.layers = nil;
+}
+
+- (void)internal_initContainers
+{
+    if (_layers == nil)
+    {
+        self.layers = [NSMutableDictionary object];
     }
 }
 
@@ -41,6 +55,7 @@
 - (void)setViewLayer:(ViewLayer*)viewLayer
            layerName:(NSString*)layerName
 {
+    CheckTrue(_layers != nil);
     CheckTrue(_layers[layerName] == nil);
 
     [_layers setObject:viewLayer

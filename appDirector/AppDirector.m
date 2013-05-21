@@ -63,9 +63,7 @@
         {
             [manager unload];
         }
-        
-        [self internal_removeManagers];
-        [self internal_setupManagers];
+
         [[GameAppDelegate sharedApplicationDelegate] reload];
     }
     
