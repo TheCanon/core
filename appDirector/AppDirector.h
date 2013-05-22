@@ -1,4 +1,5 @@
 #import "Base.h"
+#import "UpdateBlockAtInterval.h"
 
 @class Manager;
 
@@ -17,6 +18,11 @@
 - (void)registerInterUpdateBlock:(VoidBlock)interUpdateBlock;
 
 - (void)registerPostUpdateBlock:(VoidBlock)postUpdateBlock;
+
+- (void)registerUpdateBlock:(VoidBlock)updateBlock;
+
+- (void)registerUpdateBlockAtFPS:(int)updatesPerSecond
+                     updateBlock:(VoidBlock)updateBlock;
 
 - (void)injectManagersIntoIVars:(id)injectee;
 

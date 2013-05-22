@@ -8,8 +8,6 @@
 
 - (void)reload {}
 
-- (void)update {}
-
 - (void)injectConfig:(NSString*)configJsonName
 {
     @autoreleasepool

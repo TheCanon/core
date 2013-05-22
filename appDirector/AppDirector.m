@@ -10,6 +10,7 @@
 }
 
 @property (nonatomic, retain) NSMutableArray* preUpdateBlocks;
+@property (nonatomic, retain) NSMutableArray* updateBlocksAtInterval;
 @property (nonatomic, retain) NSMutableArray* interUpdateBlocks;
 @property (nonatomic, retain) NSMutableArray* postUpdateBlocks;
 @property (nonatomic, retain) NSDictionary* managersByClass;
@@ -17,7 +18,6 @@
 @property (nonatomic, assign) BOOL shouldReload;
 
 @end
-
 
 @implementation AppDirector
 
@@ -27,6 +27,7 @@
     {
         _preUpdateBlocks = [NSMutableArray new];
         _interUpdateBlocks = [NSMutableArray new];
+        _updateBlocksAtInterval = [NSMutableArray new];
         _postUpdateBlocks = [NSMutableArray new];
     }
     return self;
@@ -62,7 +63,7 @@
     }
     
     [self internal_performNextFrame];
-
+    
     if (displayLink == nil)
     {
         displayLink = [[UIScreen mainScreen] displayLinkWithTarget:self selector:@selector(internal_performNextFrame)];
@@ -81,19 +82,21 @@
         {
             [manager reload];
         }
-
-
+        
+        
         self.shouldReload = NO;
     }
-
+    
     for (VoidBlock preUpdateBlock in _preUpdateBlocks)
     {
         preUpdateBlock();
     }
     
-    for (Manager* manager in _managersByClass.allValues)
+    NSTimeInterval frameStartTime = CACurrentMediaTime();
+    
+    for (UpdateBlockAtInterval* updateBlockAtInterval in _updateBlocksAtInterval)
     {
-        [manager update];
+        [updateBlockAtInterval updateAtCurrentTimeInSec:frameStartTime];
         
         for (VoidBlock interUpdateBlock in _interUpdateBlocks)
         {
@@ -126,6 +129,21 @@
 {
     [_postUpdateBlocks addObject:[[postUpdateBlock copy] autorelease]];
 }
+
+- (void)registerUpdateBlock:(VoidBlock)updateBlock
+{
+    [self registerUpdateBlockAtFPS:60
+                       updateBlock:updateBlock];
+}
+
+- (void)registerUpdateBlockAtFPS:(int)updatesPerSecond
+                     updateBlock:(VoidBlock)updateBlock
+{
+    [_updateBlocksAtInterval addObject:[UpdateBlockAtInterval objectWithUpdateBlock:updateBlock
+                                                                   updatesPerSecond:updatesPerSecond
+                                                                   currentTimeInSec:CACurrentMediaTime()]];
+}
+
 
 - (void)internal_setupManagers
 {
