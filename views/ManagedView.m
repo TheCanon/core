@@ -8,6 +8,8 @@
 {
 	
 }
+@property (nonatomic, copy) VoidBlock updateBlock;
+@property (nonatomic, retain) NSTimer* updateBlockTimer;
 @property (nonatomic, assign) ViewLayer* viewLayer;
 @property (nonatomic, assign) IBOutlet UIView* managedView;
 @end
@@ -175,6 +177,27 @@
 {
     self.parent = nil;
     [self.managedUIView removeFromSuperview];
+}
+
+- (void)internal_performUpdateBlock
+{
+    _updateBlock();
+}
+
+- (void)performUpdateBlockAtInterval:(NSTimeInterval)interval
+                         updateBlock:(VoidBlock)updateBlock
+{
+    self.updateBlock = updateBlock;
+    
+    [_updateBlockTimer invalidate];
+    
+    self.updateBlockTimer = [NSTimer scheduledTimerWithTimeInterval:interval
+                                                             target:self
+                                                           selector:@selector(internal_performUpdateBlock)
+                                                           userInfo:nil
+                                                            repeats:YES];
+    
+    [self internal_performUpdateBlock];
 }
 
 @end

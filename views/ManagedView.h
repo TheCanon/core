@@ -1,3 +1,5 @@
+#import "Utilities.h"
+
 @class AppDirector;
 @class ViewLayer;
 
@@ -36,5 +38,8 @@
 - (void)dismiss;
 
 - (void)bringSubviewToFront;
+
+- (void)performUpdateBlockAtInterval:(NSTimeInterval)interval
+                         updateBlock:(VoidBlock)updateBlock;
 
 @end

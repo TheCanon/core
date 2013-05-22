@@ -1,4 +1,5 @@
-#include "NSObject+Object.h"
+#import "NSObject+Object.h"
+#import "Utilities.h"
 
 @class AppDirector;
 
@@ -11,8 +12,6 @@
 - (void)reload;
 
 - (void)update;
-
-- (void)endOfFrame;
 
 - (void)injectConfig:(NSString*)configJsonName;
 

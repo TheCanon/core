@@ -9,6 +9,9 @@
     CADisplayLink* displayLink;
 }
 
+@property (nonatomic, retain) NSMutableArray* preUpdateBlocks;
+@property (nonatomic, retain) NSMutableArray* interUpdateBlocks;
+@property (nonatomic, retain) NSMutableArray* postUpdateBlocks;
 @property (nonatomic, retain) NSDictionary* managersByClass;
 @property (nonatomic, retain) ViewManager* viewManager;
 @property (nonatomic, assign) BOOL shouldReload;
@@ -17,6 +20,17 @@
 
 
 @implementation AppDirector
+
+- (id)init
+{
+    if (self = [super init])
+    {
+        _preUpdateBlocks = [NSMutableArray new];
+        _interUpdateBlocks = [NSMutableArray new];
+        _postUpdateBlocks = [NSMutableArray new];
+    }
+    return self;
+}
 
 - (void)dealloc
 {
@@ -69,22 +83,48 @@
         }
 
 
-self.shouldReload = NO;
+        self.shouldReload = NO;
     }
 
+    for (VoidBlock preUpdateBlock in _preUpdateBlocks)
+    {
+        preUpdateBlock();
+    }
+    
     for (Manager* manager in _managersByClass.allValues)
     {
         [manager update];
+        
+        for (VoidBlock interUpdateBlock in _interUpdateBlocks)
+        {
+            interUpdateBlock();
+        }
     }
-    for (Manager* manager in _managersByClass.allValues)
+    
+    for (VoidBlock postUpdateBlock in _postUpdateBlocks)
     {
-        [manager endOfFrame];
+        postUpdateBlock();
     }
 }
 
 - (void)reload
 {
     _shouldReload = YES;
+}
+
+- (void)registerPreUpdateBlock:(VoidBlock)preUpdateBlock
+{
+    [_preUpdateBlocks addObject:[[preUpdateBlock copy] autorelease]];
+}
+
+- (void)registerInterUpdateBlock:(VoidBlock)interUpdateBlock
+{
+    [_interUpdateBlocks addObject:[[interUpdateBlock copy] autorelease]];
+}
+
+- (void)registerPostUpdateBlock:(VoidBlock)postUpdateBlock
+{
+    [_postUpdateBlocks addObject:[[postUpdateBlock copy] autorelease]];
 }
 
 - (void)internal_setupManagers
