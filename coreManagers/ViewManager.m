@@ -3,6 +3,7 @@
 #import "ManagedView.h"
 #import "Base.h"
 #import "AppDirector.h"
+#import "EAGLView.h"
 
 @interface ViewManager ()
 {
@@ -10,7 +11,7 @@
 }
 
 @property (nonatomic, retain) NSMutableDictionary* layers;
-
+@property (nonatomic, retain) EAGLView* eaglView;
 @end
 
 @implementation ViewManager
@@ -40,6 +41,16 @@
 {
     [self setViewLayer:viewLayer
              layerName:@"default"];
+}
+
+- (void)setEAGLView:(EAGLView*)eaglView
+{
+    self.eaglView = eaglView;
+}
+
+- (EAGLView*)getEAGLView
+{
+    return _eaglView;
 }
 
 - (void)setViewLayer:(ViewLayer*)viewLayer
