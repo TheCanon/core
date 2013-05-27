@@ -19,6 +19,11 @@
     [super dealloc];
 }
 
+- (NSString*)description
+{
+    return _identifier;
+}
+
 - (BOOL)isEqual:(Identifier*)identifier
 {
     return [_identifier isEqual:identifier.identifier];
@@ -51,6 +56,20 @@
 {
     CheckTrue(_identifier == nil);
     self.identifier = Format(@"%lld", intIdentifier);
+}
+
++ (Identifier*)objectWithStringIdentifier:(NSString*)stringIdentifier
+{
+    Identifier* identifier = [Identifier object];
+    [identifier setStringIdentifier:stringIdentifier];
+    return identifier;
+}
+
++ (Identifier*)objectWithIntIdentifier:(int)intIdentifier
+{
+    Identifier* identifier = [Identifier object];
+    [identifier setIntIdentifier:intIdentifier];
+    return identifier;
 }
 
 @end

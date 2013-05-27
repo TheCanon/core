@@ -67,7 +67,7 @@ NSDateFormatter* dateFormatter = nil;
         for (id entry in value)
         {
             [Util addNewEntryToArray:targetEntry
-                               value:value];
+                               value:entry];
         }
         [target addObject:targetEntry];
     }

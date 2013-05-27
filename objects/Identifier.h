@@ -11,4 +11,8 @@
 
 - (void)setIntIdentifier:(int64_t)intIdentifier;
 
++ (Identifier*)objectWithStringIdentifier:(NSString*)stringIdentifier;
+
++ (Identifier*)objectWithIntIdentifier:(int)intIdentifier;
+
 @end
