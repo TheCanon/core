@@ -11,7 +11,7 @@
 }
 
 @property (nonatomic, retain) NSMutableDictionary* layers;
-@property (nonatomic, retain) EAGLView* eaglView;
+@property (nonatomic, retain) GLKView* glkView;
 @end
 
 @implementation ViewManager
@@ -43,14 +43,14 @@
              layerName:@"default"];
 }
 
-- (void)setEAGLView:(EAGLView*)eaglView
+- (void)setGLKView:(GLKView*)glkView
 {
-    self.eaglView = eaglView;
+    self.glkView = glkView;
 }
 
-- (EAGLView*)getEAGLView
+- (GLKView*)getGLKView
 {
-    return _eaglView;
+    return _glkView;
 }
 
 - (void)setViewLayer:(ViewLayer*)viewLayer

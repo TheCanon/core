@@ -2,15 +2,15 @@
 
 @class ViewLayer;
 @class ManagedView;
-@class EAGLView;
+@class GLKView;
 
 @interface ViewManager : Manager
 
 - (void)setDefaultViewLayer:(ViewLayer*)viewLayer;
 
-- (void)setEAGLView:(EAGLView*)eaglView;
+- (void)setGLKView:(GLKView*)glkView;
 
-- (EAGLView*)getEAGLView;
+- (GLKView*)getGLKView;
 
 - (void)setViewLayer:(ViewLayer*)viewLayer
            layerName:(NSString*)layerName;
