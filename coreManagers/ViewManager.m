@@ -3,7 +3,6 @@
 #import "ManagedView.h"
 #import "Base.h"
 #import "AppDirector.h"
-#import "EAGLView.h"
 
 @interface ViewManager ()
 {
