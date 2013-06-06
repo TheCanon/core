@@ -67,7 +67,7 @@
     if (displayLink == nil)
     {
         displayLink = [[UIScreen mainScreen] displayLinkWithTarget:self selector:@selector(internal_performNextFrame)];
-        [displayLink setFrameInterval:2]; // 1 - 60fps, 2 - 30fps, etc.
+        [displayLink setFrameInterval:1]; // 1 - 60fps, 2 - 30fps, etc.
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     }
 }
