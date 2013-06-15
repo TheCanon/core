@@ -7,6 +7,7 @@
 #define Float(x) [NSNumber numberWithFloat:x]
 #define Bool(x) [NSNumber numberWithBool:x]
 #define Integer(x) [NSNumber numberWithInt:x]
+#define Dictionary(args...) [NSMutableDictionary dictionaryWithObjectsAndKeys:args, nil]
 
 typedef void (^VoidBlock)();
 

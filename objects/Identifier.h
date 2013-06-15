@@ -15,4 +15,6 @@
 
 + (Identifier*)objectWithIntIdentifier:(int)intIdentifier;
 
++ (Identifier*)objectWithNextIdentifier;
+
 @end

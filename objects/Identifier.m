@@ -72,4 +72,10 @@
     return identifier;
 }
 
++ (Identifier*)objectWithNextIdentifier
+{
+    static int nextGeneratedIdentifier = 1;
+    return [Identifier objectWithStringIdentifier:Format(@"%d", nextGeneratedIdentifier++)];
+}
+
 @end
