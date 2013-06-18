@@ -11,7 +11,24 @@
 
 typedef void (^VoidBlock)();
 
+extern Class kArrayClass;
+extern Class kMutableArrayClass;
+extern Class kDictionaryClass;
+extern Class kMutableDictionaryClass;
+extern Class kStringClass;
+extern Class kMutableStringClass;
+extern Class kNumberClass;
+extern Class kObjectClass;
+extern Class kEntitySpecClass;
+extern Class kManagerClass;
+extern Class kManagedViewClass;
+extern Class kManagedPropertiesObjectClass;
+extern Class kComponentClass;
+extern Class kBasicSerializedClassesPlaceholderClass;
+
 @interface Util : NSObject
+
++ (void)initializeCachedClasses;
 
 + (NSArray*)allClassesWithSuperClass:(Class)superClass;
 
@@ -19,4 +36,6 @@ typedef void (^VoidBlock)();
 
 + (void)addNewEntriesOfSourceDictionary:(NSDictionary*)source
                      toTargetDictionary:(NSMutableDictionary*)target;
+
++ (void)removeDefaultValuesFromDictionary:(NSMutableDictionary*)dictionary;
 @end

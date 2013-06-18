@@ -73,7 +73,7 @@
 {
     id parent = self.parent;
     CGPoint currentLocationOfSelfInParent = [self.managedUIView frame].origin;
-    if ([parent isKindOfClass:ManagedView.class])
+    if ([parent isKindOfClass:kManagedViewClass])
     {
         ManagedView* managedViewParent = (ManagedView*)parent;
         CGPoint parentLocation = [managedViewParent locationInHighestParentView];

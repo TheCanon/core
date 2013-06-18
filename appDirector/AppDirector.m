@@ -147,7 +147,7 @@
 
 - (void)internal_setupManagers
 {
-    NSArray* managerClasses = [Util allClassesWithSuperClass:Manager.class];
+    NSArray* managerClasses = [Util allClassesWithSuperClass:kManagerClass];
     
     NSMutableDictionary* managersByClass = [NSMutableDictionary object];
     
@@ -178,7 +178,7 @@
 {
     Class injecteeClass = [injectee class];
     while (injecteeClass &&
-           injecteeClass != [NSObject class])
+           injecteeClass != kObjectClass)
     {
         unsigned int ivarListCount = 0;
         Ivar* ivarList = class_copyIvarList(injecteeClass, &ivarListCount);

@@ -12,7 +12,8 @@
 {
     @autoreleasepool
     {
-        [self setValuesWithSerializedRepresentation:[ResourceManager configurationForResource:configJsonName]];
+        [self setValuesWithSerializedRepresentation:[ResourceManager configurationObjectForResourceInBundleWithName:configJsonName
+                                                                                                         usingClass:kDictionaryClass]];
     }
 }
 

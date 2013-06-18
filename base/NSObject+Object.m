@@ -1,24 +1,22 @@
 #import "NSObject+Object.h"
 #import <objc/runtime.h>
 #import "Asserts.h"
+#import "Utilities.h"
 
-
-void ManagedPropertiesObject__releaseManagedPropertiesRecursive(id self, Class currentClass);
+void releaseManagedPropertiesRecursive(id self, Class currentClass);
 
 @implementation ManagedPropertiesObject
 
 - (void)dealloc
 {
-	ManagedPropertiesObject__releaseManagedPropertiesRecursive(self, [self class]);
+	releaseManagedPropertiesRecursive(self, [self class]);
 	
 	[super dealloc];
 }
 
 @end
 
-static void ManagedPropertiesObject__isPropertyForObjectValue_isRetained(objc_property_t property,
-                                                                         BOOL* isObjectType,
-                                                                         BOOL* isRetained)
+static void isPropertyForObjectValue_isRetained(objc_property_t property, BOOL* isObjectType, BOOL* isRetained)
 {
 	*isObjectType = NO;
 	*isRetained = NO;
@@ -28,22 +26,18 @@ static void ManagedPropertiesObject__isPropertyForObjectValue_isRetained(objc_pr
 	if (attrs == NULL)
 		return;
 	
-	*isRetained = strstr(attrs, ",&,") != NULL ||
-	strstr(attrs, ",C,") != NULL;
+	*isRetained = strstr(attrs, ",&,") != NULL || strstr(attrs, ",C,") != NULL;
 	
 	const char * e = strchr(attrs, ',');
 	
 	if (e == NULL)
 		return;
 	
-	if (attrs[0] == 'T' &&
-		attrs[1] == '@')
-	{
+	if (attrs[0] == 'T' && attrs[1] == '@')
 		*isObjectType = YES;
-	}
 }
 
-static void ManagedPropertiesObject__releaseManagedProperties(id object, Class self)
+static void releaseManagedProperties(id object, Class self)
 {
 	// If this assert hits, you are using the wrong class in your class to releaseRetainedPropertiesOfObject
     CheckTrue([object isKindOfClass:self]);
@@ -58,9 +52,7 @@ static void ManagedPropertiesObject__releaseManagedProperties(id object, Class s
 		BOOL isRetained = NO;
 		BOOL isOfObjectType = NO;
 		
-		ManagedPropertiesObject__isPropertyForObjectValue_isRetained(property,
-																	 &isOfObjectType,
-																	 &isRetained);
+		isPropertyForObjectValue_isRetained(property, &isOfObjectType, &isRetained);
 		
 		if (isOfObjectType && isRetained)
 		{
@@ -77,17 +69,16 @@ static void ManagedPropertiesObject__releaseManagedProperties(id object, Class s
 	free(propertyList);
 }
 
-void ManagedPropertiesObject__releaseManagedPropertiesRecursive(id self, Class currentClass)
+void releaseManagedPropertiesRecursive(id self, Class currentClass)
 {
-    //NSLog(@"<<< ManagedPropertiesObject__releaseManagedPropertiesRecursive: %@>>>", self);
-	ManagedPropertiesObject__releaseManagedProperties(self, currentClass);
+	releaseManagedProperties(self, currentClass);
     
 	Class nextClass = [currentClass superclass];
 	
 	if (nextClass != nil &&
-		nextClass != [NSObject class])
+		nextClass != kObjectClass)
 	{
-		ManagedPropertiesObject__releaseManagedPropertiesRecursive(self, nextClass);
+		releaseManagedPropertiesRecursive(self, nextClass);
 	}
 }
 
@@ -100,12 +91,10 @@ void ManagedPropertiesObject__releaseManagedPropertiesRecursive(id self, Class c
 
 + (void)releaseRetainedPropertiesOfObject:(id)object
 {
-    //NSLog(@"<<< ReleaseRetainedPropertiesOfObject: %@>>>", object);
-
     // Why are you releasing stuff yourself in a subclass of ManagedPropertiesObject?
-    CheckTrue(![self isSubclassOfClass:ManagedPropertiesObject.class]);
+    CheckTrue(![self isSubclassOfClass:kManagedPropertiesObjectClass]);
 
-    ManagedPropertiesObject__releaseManagedProperties(object, self);
+    releaseManagedProperties(object, self);
 }
 
 @end

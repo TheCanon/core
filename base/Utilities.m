@@ -1,10 +1,46 @@
 #import "Utilities.h"
 #import <objc/runtime.h>
 #import "ViewManager.h"
+#import "EntitySpec.h"
+#import "ManagedView.h"
+#import "Component.h"
 
 NSDateFormatter* dateFormatter = nil;
 
+Class kArrayClass = nil;
+Class kMutableArrayClass = nil;
+Class kDictionaryClass = nil;
+Class kMutableDictionaryClass = nil;
+Class kStringClass = nil;
+Class kMutableStringClass = nil;
+Class kNumberClass = nil;
+Class kObjectClass = nil;
+Class kEntitySpecClass = nil;
+Class kManagerClass = nil;
+Class kManagedViewClass = nil;
+Class kManagedPropertiesObjectClass = nil;
+Class kComponentClass = nil;
+Class kBasicSerializedClassesPlaceholderClass = nil;
+
 @implementation Util
+
++ (void)initializeCachedClasses
+{
+    kArrayClass = NSArray.class;
+    kMutableArrayClass = NSMutableArray.class;
+    kDictionaryClass = NSDictionary.class;
+    kMutableDictionaryClass = NSMutableDictionary.class;
+    kStringClass = NSString.class;
+    kMutableStringClass = NSMutableString.class;
+    kNumberClass = NSNumber.class;
+    kObjectClass = NSObject.class;
+    kEntitySpecClass = EntitySpec.class;
+    kManagerClass = Manager.class;
+    kManagedViewClass = ManagedView.class;
+    kManagedPropertiesObjectClass = ManagedPropertiesObject.class;
+    kComponentClass = Component.class;
+    kBasicSerializedClassesPlaceholderClass = BasicSerializedClassesPlaceholder.class;
+}
 
 + (NSArray*)allClassesWithSuperClass:(Class)superClass
 {
@@ -54,14 +90,14 @@ NSDateFormatter* dateFormatter = nil;
 + (void)addNewEntryToArray:(NSMutableArray*)target
                      value:(id)value
 {
-    if ([value isKindOfClass:NSDictionary.class])
+    if ([value isKindOfClass:kDictionaryClass])
     {
         NSMutableDictionary* targetEntry = [NSMutableDictionary object];
         [Util addNewEntriesOfSourceDictionary:value
                            toTargetDictionary:targetEntry];
         [target addObject:targetEntry];
     }
-    else if ([value isKindOfClass:NSArray.class])
+    else if ([value isKindOfClass:kArrayClass])
     {
         NSMutableArray* targetEntry = [NSMutableArray object];
         for (id entry in value)
@@ -81,7 +117,7 @@ NSDateFormatter* dateFormatter = nil;
                             key:(NSString*)key
                           value:(id)value
 {
-    if ([value isKindOfClass:NSDictionary.class])
+    if ([value isKindOfClass:kDictionaryClass])
     {
         NSMutableDictionary* targetEntry = [NSMutableDictionary object];
         [Util addNewEntriesOfSourceDictionary:value
@@ -89,7 +125,7 @@ NSDateFormatter* dateFormatter = nil;
         [target setObject:targetEntry
                    forKey:key];
     }
-    else if ([value isKindOfClass:NSArray.class])
+    else if ([value isKindOfClass:kArrayClass])
     {
         NSMutableArray* targetEntry = [NSMutableArray object];
         for (id entry in value)
@@ -111,18 +147,10 @@ NSDateFormatter* dateFormatter = nil;
 + (void)addNewEntriesOfSourceDictionary:(NSDictionary*)source
                      toTargetDictionary:(NSMutableDictionary*)target;
 {
-    // TODO: replace (then test) with object_getClass([NSDictionary.class])
-    // TODO: replace (then test) with object_getClass([NSMutableDictionary.class])
-    Class dictionaryClass = source.class;
-    Class mutableDictionaryClass = target.class;
-    
     for (NSString* sourceKey in source.allKeys)
     {
         id sourceValue = [source objectForKey:sourceKey];
         id targetValue = [target objectForKey:sourceKey];
-        
-        Class sourceValueClass = [sourceValue class];
-        Class targetValueClass = [targetValue class];
         
         if (targetValue == nil)
         {
@@ -133,16 +161,66 @@ NSDateFormatter* dateFormatter = nil;
         }
         else if (targetValue != nil)
         {
-            if (sourceValueClass == dictionaryClass &&
-                (targetValueClass == mutableDictionaryClass ||
-                 targetValueClass == dictionaryClass))
+            if ([sourceValue isKindOfClass:kDictionaryClass] &&
+                ([targetValue isKindOfClass:kMutableDictionaryClass] ||
+                 [targetValue isKindOfClass:kDictionaryClass]))
             {
                 [Util addNewEntriesOfSourceDictionary:sourceValue
                                    toTargetDictionary:targetValue];
             }
-            continue;
         }
     }
+}
+
+void removeDefaultValuesFromDictionaryRecursive(NSMutableDictionary* dictionary)
+{
+    for (id key in dictionary.allKeys)
+    {
+        id value = [dictionary objectForKey:key];
+        
+        if ([value isKindOfClass:kMutableDictionaryClass])
+        {
+            NSMutableDictionary* mutableDictionaryValue = (NSMutableDictionary*)value;
+            
+            removeDefaultValuesFromDictionaryRecursive(mutableDictionaryValue);
+            
+            if (mutableDictionaryValue.count == 0)
+                [dictionary removeObjectForKey:key];
+            
+            continue;
+        }
+        
+        CheckTrue(![value isKindOfClass:kDictionaryClass]);
+        
+        if ([value isKindOfClass:kArrayClass] ||
+            [value isKindOfClass:kMutableArrayClass])
+        {
+            NSArray* arrayValue = (NSArray*)value;
+            
+            for (id entry in arrayValue)
+            {
+                if ([entry isKindOfClass:kMutableDictionaryClass])
+                {
+                    removeDefaultValuesFromDictionaryRecursive(entry);
+                    continue;
+                }
+                
+                CheckTrue(![entry isKindOfClass:kDictionaryClass]);
+            }
+        }
+        
+        if (value == [NSNull null])
+            [dictionary removeObjectForKey:key];
+        else if ([value respondsToSelector:@selector(floatValue)] &&
+                 [value floatValue] == 0)
+            [dictionary removeObjectForKey:key];
+        
+    }
+}
+
++ (void)removeDefaultValuesFromDictionary:(NSMutableDictionary*)dictionary
+{
+    removeDefaultValuesFromDictionaryRecursive(dictionary);
 }
 
 @end

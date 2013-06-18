@@ -2,13 +2,14 @@
 
 @interface ResourceManager : Manager
 
-+ (NSString*)formatPathForResourceWithName:(NSString*)resourceName;
++ (BOOL)doesResourceAtPathExist:(NSString*)resourceName;
 
-+ (id)configurationObjectForResource:(NSString*)resourceName
-                          usingClass:(Class)configurationClass;
++ (NSString*)formatPathForResourceInBundleWithName:(NSString*)resourceName;
 
-+ (id)configurationForResource:(NSString*)resourceName;
++ (id)configurationObjectForResourceAtPath:(NSString*)resourceName
+                                usingClass:(Class)configurationClass;
 
-
++ (id)configurationObjectForResourceInBundleWithName:(NSString*)resourceName
+                                          usingClass:(Class)configurationClass;
 
 @end

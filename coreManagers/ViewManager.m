@@ -90,7 +90,7 @@
 {
     CheckNotNull(managedViewClass);
     
-    CheckTrue([managedViewClass isSubclassOfClass:ManagedView.class]);
+    CheckTrue([managedViewClass isSubclassOfClass:kManagedViewClass]);
     
     ManagedView* managedView = [ManagedView createManagedViewWithClass:managedViewClass
                                                                 parent:parent];

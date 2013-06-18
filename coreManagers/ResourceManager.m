@@ -14,43 +14,40 @@
 
 @implementation ResourceManager
 
-+ (NSData*)dataForResource:(NSString*)resourceName
++ (BOOL)doesResourceAtPathExist:(NSString*)resourceName
 {
-	return [NSData dataWithContentsOfFile:[self formatPathForResourceWithName:resourceName]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:resourceName];
 }
 
-+ (NSString*)formatPathForResourceWithName:(NSString*)resourceName
++ (NSData*)dataForResourceInBundle:(NSString*)resourceName
+{
+	return [NSData dataWithContentsOfFile:[self formatPathForResourceInBundleWithName:resourceName]];
+}
+
++ (NSString*)formatPathForResourceInBundleWithName:(NSString*)resourceName
 {
     NSString* path = [[NSBundle mainBundle] pathForResource:Format(@"bundle/%@", resourceName)
                                                      ofType:nil];
 
-    CheckTrue([[NSFileManager defaultManager] fileExistsAtPath:path])
+    CheckTrue([ResourceManager doesResourceAtPathExist:path])
         
     return path;
 }
 
-+ (id)configurationObjectForResource:(NSString*)resourceName
-                          usingClass:(Class)configurationClass
++ (NSDictionary*)internal_dataForResourceAtPath:(NSString*)path
 {
-    NSDictionary* dictionary = [self configurationForResource:resourceName];
-    
-    CheckNotNull(dictionary);
-    
-    if (dictionary == nil)
-        return nil;
-    
-	return [configurationClass objectFromSerializedRepresentation:dictionary];
-}
-
-+ (id)configurationForResource:(NSString*)resourceName
-{
-	CheckNotNull(resourceName);
+	CheckNotNull(path);
 	
 	// Load Configuration File
-	NSData* configurationJSONData = [self dataForResource:resourceName];
+	NSData* configurationJSONData = [NSData dataWithContentsOfFile:path];
+    
 	CheckNotNull(configurationJSONData);
 	
-    NSError* error = [NSError object];
+    static NSError* error = nil;
+    
+    if (error == nil)
+        error = [NSError new];
+    
 	NSMutableDictionary* configurationDictionary = [configurationJSONData mutableObjectFromJSONDataWithParseOptions:JKParseOptionStrict
                                                                                                               error:&error];
 	CheckNotNull(configurationDictionary);
@@ -58,6 +55,27 @@
 	return configurationDictionary;
 }
 
++ (id)configurationObjectForResourceAtPath:(NSString*)resourceName
+                                usingClass:(Class)configurationClass
+{
+    NSDictionary* dictionary = [self internal_dataForResourceAtPath:resourceName];
+    
+    CheckNotNull(dictionary);
+    
+    if (dictionary == nil)
+        return nil;
+    
+    if (configurationClass == kDictionaryClass)
+        return dictionary;
+    
+	return [configurationClass objectFromSerializedRepresentation:dictionary];
+}
 
++ (id)configurationObjectForResourceInBundleWithName:(NSString*)resourceName
+                                          usingClass:(Class)configurationClass
+{
+    return [ResourceManager configurationObjectForResourceAtPath:[ResourceManager formatPathForResourceInBundleWithName:resourceName]
+                                                      usingClass:configurationClass];
+}
 
 @end

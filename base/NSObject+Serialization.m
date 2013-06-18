@@ -1,6 +1,7 @@
 #import "NSObject+Serialization.h"
 #import <objc/runtime.h>
 #import "Asserts.h"
+#import "Utilities.h"
 
 static NSMutableDictionary* deserializersByPropertyNameByClass;
 static NSMutableDictionary* classesByPropertyNameByClass;
@@ -36,9 +37,7 @@ static NSMutableDictionary* classesByPropertyNameByClass;
     }
     
     NSMutableDictionary* classesByPropertyName = classesByPropertyNameByClass[self.class];
-    CFDictionarySetValue((CFMutableDictionaryRef)classesByPropertyName,
-                         propertyName,
-                         classToUse);
+    CFDictionarySetValue((CFMutableDictionaryRef)classesByPropertyName, propertyName, classToUse);
 }
 
 
@@ -156,7 +155,7 @@ Class classForProperty(objc_property_t property)
                                propertyName);
             }
 			// Special case for dictionaries
-			else if ([propertyClass isKindOfClass:object_getClass([NSDictionary class])])
+			else if ([propertyClass isKindOfClass:object_getClass(kDictionaryClass)])
 			{
                 Class registeredClass = classForContainerProperty(selfClass, propertyName);
                 
@@ -171,16 +170,16 @@ Class classForProperty(objc_property_t property)
                         
                         Class classToUse = registeredClass;
                         
-                        if (classToUse == [BasicSerializedClassesPlaceholder class])
+                        if (classToUse == kBasicSerializedClassesPlaceholderClass)
                         {
-                            if ([serializedContainedObject isKindOfClass:[NSNumber class]])
-                                classToUse = [NSNumber class];
-                            else if ([serializedContainedObject isKindOfClass:[NSString class]])
-                                classToUse = [NSString class];
-                            else if ([serializedContainedObject isKindOfClass:[NSArray class]])
-                                classToUse = [NSMutableArray class];
+                            if ([serializedContainedObject isKindOfClass:kNumberClass])
+                                classToUse = kNumberClass;
+                            else if ([serializedContainedObject isKindOfClass:kStringClass])
+                                classToUse = kStringClass;
+                            else if ([serializedContainedObject isKindOfClass:kArrayClass])
+                                classToUse = kMutableArrayClass;
                             else
-                                classToUse = [NSObject class];
+                                classToUse = kObjectClass;
                         }
                         
 						id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
@@ -199,7 +198,7 @@ Class classForProperty(objc_property_t property)
 				}
 			}
 			// Special case for arrays
-			else if ([propertyClass isKindOfClass:object_getClass([NSArray class])])
+			else if ([propertyClass isKindOfClass:object_getClass(kArrayClass)])
 			{
                 Class registeredClass = classForContainerProperty(selfClass, propertyName);
                 
@@ -211,16 +210,16 @@ Class classForProperty(objc_property_t property)
 					{
                         Class classToUse = registeredClass;
                         
-                        if (classToUse == [BasicSerializedClassesPlaceholder class])
+                        if (classToUse == kBasicSerializedClassesPlaceholderClass)
                         {
-                            if ([serializedContainedObject isKindOfClass:[NSNumber class]])
-                                classToUse = [NSNumber class];
-                            else if ([serializedContainedObject isKindOfClass:[NSString class]])
-                                classToUse = [NSString class];
-                            else if ([serializedContainedObject isKindOfClass:[NSArray class]])
-                                classToUse = [NSMutableArray class];
+                            if ([serializedContainedObject isKindOfClass:kNumberClass])
+                                classToUse = kNumberClass;
+                            else if ([serializedContainedObject isKindOfClass:kStringClass])
+                                classToUse = kStringClass;
+                            else if ([serializedContainedObject isKindOfClass:kArrayClass])
+                                classToUse = kMutableArrayClass;
                             else
-                                classToUse = [NSObject class];
+                                classToUse = kObjectClass;
                         }
                         
 						id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
@@ -347,7 +346,7 @@ void serializedRepresentationRecursive(id self, Class currentClass, id result)
 	
 	Class nextClass = [currentClass superclass];
 	
-	if (nextClass != nil && nextClass != [NSObject class])
+	if (nextClass != nil && nextClass != kObjectClass)
 	{
 		serializedRepresentationRecursive(self, nextClass, result);
 	}
