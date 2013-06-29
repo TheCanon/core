@@ -13,6 +13,8 @@
 
 @implementation Identifier
 
+Serialize(identifier);
+
 - (void)dealloc
 {
     [_identifier release];

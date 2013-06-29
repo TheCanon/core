@@ -223,4 +223,22 @@ void removeDefaultValuesFromDictionaryRecursive(NSMutableDictionary* dictionary)
     removeDefaultValuesFromDictionaryRecursive(dictionary);
 }
 
++ (float)randomFloatBetween0And1
+{
+	return rand() / (float)RAND_MAX;
+}
+
++ (float)randomFloatBetweenMin:(float)min
+                           max:(float)max
+{
+	return (max - min) * [Util randomFloatBetween0And1] + min;
+}
+
++ (int)randomIntBetweenMin:(int)min
+                       max:(int)max
+{
+	return [Util randomFloatBetweenMin:min
+                                   max:max + 1];
+}
+
 @end

@@ -159,82 +159,94 @@ Class classForProperty(objc_property_t property)
 			{
                 Class registeredClass = classForContainerProperty(selfClass, propertyName);
                 
-                if (registeredClass != nil)
-				{
-					NSMutableDictionary* deserializedDictionary = [NSMutableDictionary new];
-					
-					for (NSString* serializedContainedObjectKey in propertyValue)
-					{
-						id serializedContainedObject = (id)CFDictionaryGetValue((CFDictionaryRef)propertyValue,
-                                                                                serializedContainedObjectKey);
-                        
-                        Class classToUse = registeredClass;
-                        
-                        if (classToUse == kBasicSerializedClassesPlaceholderClass)
-                        {
-                            if ([serializedContainedObject isKindOfClass:kNumberClass])
-                                classToUse = kNumberClass;
-                            else if ([serializedContainedObject isKindOfClass:kStringClass])
-                                classToUse = kStringClass;
-                            else if ([serializedContainedObject isKindOfClass:kArrayClass])
-                                classToUse = kMutableArrayClass;
-                            else
-                                classToUse = kObjectClass;
-                        }
-                        
-						id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
-						
-                        CFDictionarySetValue((CFMutableDictionaryRef)deserializedDictionary,
-                                             serializedContainedObjectKey,
-                                             deserializedContainedObject);
-					}
-					
+                if (registeredClass == nil)
+                {
                     setValueForKey(self,
                                    setValueForKeySelector,
-                                   deserializedDictionary,
+                                   propertyValue,
                                    propertyName);
-					
-					[deserializedDictionary release];
-				}
+                    continue;
+                }
+                
+                NSMutableDictionary* deserializedDictionary = [NSMutableDictionary new];
+                
+                for (NSString* serializedContainedObjectKey in propertyValue)
+                {
+                    id serializedContainedObject = (id)CFDictionaryGetValue((CFDictionaryRef)propertyValue,
+                                                                            serializedContainedObjectKey);
+                    
+                    Class classToUse = registeredClass;
+                    
+                    if (classToUse == kBasicSerializedClassesPlaceholderClass)
+                    {
+                        if ([serializedContainedObject isKindOfClass:kNumberClass])
+                            classToUse = kNumberClass;
+                        else if ([serializedContainedObject isKindOfClass:kStringClass])
+                            classToUse = kStringClass;
+                        else if ([serializedContainedObject isKindOfClass:kArrayClass])
+                            classToUse = kMutableArrayClass;
+                        else
+                            classToUse = kObjectClass;
+                    }
+                    
+                    id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
+                    
+                    CFDictionarySetValue((CFMutableDictionaryRef)deserializedDictionary,
+                                         serializedContainedObjectKey,
+                                         deserializedContainedObject);
+                }
+                
+                setValueForKey(self,
+                               setValueForKeySelector,
+                               deserializedDictionary,
+                               propertyName);
+                
+                [deserializedDictionary release];
 			}
 			// Special case for arrays
 			else if ([propertyClass isKindOfClass:object_getClass(kArrayClass)])
 			{
                 Class registeredClass = classForContainerProperty(selfClass, propertyName);
                 
-                if (registeredClass != nil)
-				{
-					NSMutableArray* deserializedArray = [NSMutableArray new];
-					
-					for (id serializedContainedObject in propertyValue)
-					{
-                        Class classToUse = registeredClass;
-                        
-                        if (classToUse == kBasicSerializedClassesPlaceholderClass)
-                        {
-                            if ([serializedContainedObject isKindOfClass:kNumberClass])
-                                classToUse = kNumberClass;
-                            else if ([serializedContainedObject isKindOfClass:kStringClass])
-                                classToUse = kStringClass;
-                            else if ([serializedContainedObject isKindOfClass:kArrayClass])
-                                classToUse = kMutableArrayClass;
-                            else
-                                classToUse = kObjectClass;
-                        }
-                        
-						id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
-						
-                        CFArrayAppendValue((CFMutableArrayRef)deserializedArray,
-                                           deserializedContainedObject);
-					}
-					
+                if (registeredClass == nil)
+                {
                     setValueForKey(self,
                                    setValueForKeySelector,
-                                   deserializedArray,
+                                   propertyValue,
                                    propertyName);
-					
-					[deserializedArray release];
-				}
+                    continue;
+                }
+				
+                NSMutableArray* deserializedArray = [NSMutableArray new];
+                
+                for (id serializedContainedObject in propertyValue)
+                {
+                    Class classToUse = registeredClass;
+                    
+                    if (classToUse == kBasicSerializedClassesPlaceholderClass)
+                    {
+                        if ([serializedContainedObject isKindOfClass:kNumberClass])
+                            classToUse = kNumberClass;
+                        else if ([serializedContainedObject isKindOfClass:kStringClass])
+                            classToUse = kStringClass;
+                        else if ([serializedContainedObject isKindOfClass:kArrayClass])
+                            classToUse = kMutableArrayClass;
+                        else
+                            classToUse = kObjectClass;
+                    }
+                    
+                    id deserializedContainedObject = [classToUse objectFromSerializedRepresentation:serializedContainedObject];
+                    
+                    CFArrayAppendValue((CFMutableArrayRef)deserializedArray,
+                                       deserializedContainedObject);
+                }
+                
+                setValueForKey(self,
+                               setValueForKeySelector,
+                               deserializedArray,
+                               propertyName);
+                
+                [deserializedArray release];
 			}
             else
             {

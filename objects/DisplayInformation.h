@@ -1,5 +1,5 @@
 #import "Base.h"
 
-@interface DisplayInformation : ManagedPropertiesObject
+@interface DisplayInformation : ManagedPropertiesObject<SerializeByDefault>
 
 @end

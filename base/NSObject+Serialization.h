@@ -27,3 +27,5 @@ typedef void (^DeserializerBlock)(id instance, id serializedRepresentation);
 
 @protocol SerializeByDefault
 @end
+
+#define Serialize(propertyName) - (void)serialize_##propertyName {}

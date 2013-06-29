@@ -38,4 +38,13 @@ extern Class kBasicSerializedClassesPlaceholderClass;
                      toTargetDictionary:(NSMutableDictionary*)target;
 
 + (void)removeDefaultValuesFromDictionary:(NSMutableDictionary*)dictionary;
+
++ (float)randomFloatBetween0And1;
+
++ (float)randomFloatBetweenMin:(float)min
+                           max:(float)max;
+
++ (int)randomIntBetweenMin:(int)min
+                       max:(int)max;
+
 @end
