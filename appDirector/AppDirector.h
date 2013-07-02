@@ -5,6 +5,8 @@
 
 @interface AppDirector : NSObject
 
++ (AppDirector*)sharedInstance;
+
 - (void)configure;
 
 - (void)stopRunning;

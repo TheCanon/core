@@ -1,4 +1,6 @@
+#ifdef EDITOR
 #import <UIKit/UIKit.h>
+#endif
 
 @class ManagedView;
 

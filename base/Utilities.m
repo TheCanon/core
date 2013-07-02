@@ -1,9 +1,12 @@
 #import "Utilities.h"
 #import <objc/runtime.h>
-#import "ViewManager.h"
 #import "EntitySpec.h"
+#import "EntityComponent.h"
+#import "Manager.h"
+
+#ifndef EDITOR
 #import "ManagedView.h"
-#import "Component.h"
+#endif
 
 NSDateFormatter* dateFormatter = nil;
 
@@ -17,10 +20,10 @@ Class kNumberClass = nil;
 Class kObjectClass = nil;
 Class kEntitySpecClass = nil;
 Class kManagerClass = nil;
-Class kManagedViewClass = nil;
 Class kManagedPropertiesObjectClass = nil;
-Class kComponentClass = nil;
+Class kEntityComponentClass = nil;
 Class kBasicSerializedClassesPlaceholderClass = nil;
+Class kManagedViewClass = nil;
 
 @implementation Util
 
@@ -36,10 +39,12 @@ Class kBasicSerializedClassesPlaceholderClass = nil;
     kObjectClass = NSObject.class;
     kEntitySpecClass = EntitySpec.class;
     kManagerClass = Manager.class;
-    kManagedViewClass = ManagedView.class;
     kManagedPropertiesObjectClass = ManagedPropertiesObject.class;
-    kComponentClass = Component.class;
+    kEntityComponentClass = EntityComponent.class;
     kBasicSerializedClassesPlaceholderClass = BasicSerializedClassesPlaceholder.class;
+#ifndef EDITOR
+    kManagedViewClass = ManagedView.class;
+#endif
 }
 
 + (NSArray*)allClassesWithSuperClass:(Class)superClass

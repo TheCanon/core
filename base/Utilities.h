@@ -21,10 +21,11 @@ extern Class kNumberClass;
 extern Class kObjectClass;
 extern Class kEntitySpecClass;
 extern Class kManagerClass;
-extern Class kManagedViewClass;
 extern Class kManagedPropertiesObjectClass;
-extern Class kComponentClass;
+extern Class kEntityComponentClass;
 extern Class kBasicSerializedClassesPlaceholderClass;
+
+extern Class kManagedViewClass;
 
 @interface Util : NSObject
 

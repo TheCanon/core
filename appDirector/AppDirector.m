@@ -1,12 +1,18 @@
 #import "AppDirector.h"
 #import "Manager.h"
 #import "Base.h"
-#import "ViewManager.h"
+
+#ifdef EDITOR
+#import "EditorAppDelegate.h"
+#else
 #import "GameAppDelegate.h"
+#endif
 
 @interface AppDirector ()
 {
+#ifndef EDITOR
     CADisplayLink* displayLink;
+#endif
 }
 
 @property (nonatomic, retain) NSMutableArray* preUpdateBlocks;
@@ -14,12 +20,20 @@
 @property (nonatomic, retain) NSMutableArray* interUpdateBlocks;
 @property (nonatomic, retain) NSMutableArray* postUpdateBlocks;
 @property (nonatomic, retain) NSDictionary* managersByClass;
-@property (nonatomic, retain) ViewManager* viewManager;
 @property (nonatomic, assign) BOOL shouldReload;
 
 @end
 
 @implementation AppDirector
+
++ (AppDirector*)sharedInstance
+{
+#ifdef EDITOR
+    return [EditorAppDelegate sharedApplicationDelegate].director;    
+#else
+    return [GameAppDelegate sharedApplicationDelegate].director;
+#endif
+}
 
 - (id)init
 {
@@ -48,11 +62,13 @@
 
 - (void)stopRunning
 {
+#ifndef EDITOR
     if (displayLink)
     {
         [displayLink invalidate];
         displayLink = nil;
     }
+#endif
 }
 
 - (void)beginRunning
@@ -64,12 +80,14 @@
     
     [self internal_performNextFrame];
     
+#ifndef EDITOR
     if (displayLink == nil)
     {
         displayLink = [[UIScreen mainScreen] displayLinkWithTarget:self selector:@selector(internal_performNextFrame)];
         [displayLink setFrameInterval:1]; // 1 - 60fps, 2 - 30fps, etc.
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     }
+#endif
 }
 
 - (void)internal_performNextFrame
@@ -82,7 +100,6 @@
         {
             [manager reload];
         }
-        
         
         self.shouldReload = NO;
     }

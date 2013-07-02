@@ -1,8 +1,8 @@
 #import "ViewManager.h"
-#import "ViewLayer.h"
 #import "ManagedView.h"
 #import "Base.h"
 #import "AppDirector.h"
+#import "ViewLayer.h"
 
 @interface ViewManager ()
 {

@@ -292,7 +292,7 @@ Class classForProperty(objc_property_t property)
         // Check that this is an object
         if (encoding[0] == '@')
         {
-            unsigned int len = strlen(encoding);
+            unsigned int len = (unsigned int)strlen(encoding);
             
             // Check that this is not an id type (it must have a class in the format @"SomeClass"
             if (len >= 4)
