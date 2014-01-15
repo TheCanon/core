@@ -2594,8 +2594,8 @@ rerunAfterClassFormatter:;
     //
     // XXX XXX XXX XXX
     
-    
-    BOOL   workAroundMacOSXABIBreakingBug = (JK_EXPECT_F(((NSUInteger)object) & 0x1))     ? YES  : NO;
+    NSUInteger variable = ((NSUInteger)object);
+    BOOL   workAroundMacOSXABIBreakingBug = (JK_EXPECT_F(variable) & 0x1)     ? YES  : NO;
     void  *objectISA                      = (JK_EXPECT_F(workAroundMacOSXABIBreakingBug)) ? NULL : *((void **)objectPtr);
     if(JK_EXPECT_F(workAroundMacOSXABIBreakingBug)) { goto slowClassLookup; }
     
